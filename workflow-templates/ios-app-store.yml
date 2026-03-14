@@ -1,0 +1,37 @@
+# Copy this file to your repo: .github/workflows/ios-build.yml
+# Then set up the required GitHub Secrets (see README.md)
+
+name: iOS Build & Deploy
+
+on:
+  push:
+    branches: [main, release/**]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: Cubeage/.github/.github/workflows/ios-sign-and-build.yml@main
+    with:
+      scheme: YOUR_SCHEME_NAME          # e.g. MyApp
+      configuration: Release
+      export-method: app-store          # app-store | ad-hoc | development | enterprise
+    secrets:
+      BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+      P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+      PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+  # Optional: Upload to TestFlight after successful build
+  # upload:
+  #   needs: build
+  #   runs-on: [self-hosted, macOS, X64]
+  #   steps:
+  #     - name: Upload to TestFlight
+  #       env:
+  #         APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+  #       run: |
+  #         xcrun altool --upload-app \
+  #           --file "${{ needs.build.outputs.ipa-path }}" \
+  #           --apiKey "$APP_STORE_CONNECT_API_KEY"
