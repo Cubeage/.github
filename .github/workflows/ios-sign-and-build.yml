@@ -62,7 +62,7 @@ on:
 jobs:
   build:
     name: iOS Build (${{ inputs.scheme }})
-    runs-on: [self-hosted, macOS, X64]
+    runs-on: [self-hosted, sylphx, macos, standard]
     outputs:
       ipa-path: ${{ steps.export.outputs.ipa-path }}
 
