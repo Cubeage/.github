@@ -1,0 +1,134 @@
+{
+  "$schema": "https://github.com/SylphxAI/doctrine/schemas/project-manifest.schema.json",
+  "schemaVersion": 1,
+  "project": {
+    "repo": "Cubeage/.github",
+    "name": "Cubeage GitHub Infrastructure",
+    "lifecycle": "production",
+    "layer": "tooling",
+    "summary": "Cubeage organization-level GitHub Actions workflow templates and reusable iOS signing/build workflow surfaces.",
+    "goals": [
+      "Provide reusable GitHub Actions workflow surfaces for Cubeage repositories.",
+      "Keep iOS signing/build workflow inputs, required secrets, runner labels, and build artifacts visible in Git.",
+      "Document the temporary-keychain security model used by Cubeage iOS builds."
+    ],
+    "nonGoals": [
+      "Own individual Cubeage game or application source code.",
+      "Own Apple Developer accounts, signing secrets, provisioning profiles, or per-app release decisions.",
+      "Own the Kubernetes, Talos, or macOS runner infrastructure that provides the self-hosted runner labels."
+    ]
+  },
+  "boundaries": {
+    "owns": [
+      {
+        "name": "org-workflow-templates",
+        "description": "Reusable workflow templates exposed to Cubeage repositories through GitHub's organization template surface."
+      },
+      {
+        "name": "ios-sign-and-build-workflow",
+        "description": "The reusable GitHub Actions workflow that signs, archives, exports, and uploads iOS IPA artifacts."
+      },
+      {
+        "name": "ios-runner-usage-documentation",
+        "description": "Documentation of required runner labels, workflow inputs, secrets, outputs, and signing-asset cleanup behavior."
+      }
+    ],
+    "doesNotOwn": [
+      "Consumer application code, tests, store metadata, deployment, or release decisions.",
+      "Apple Developer account membership, certificates, provisioning profiles, or app-specific signing secrets.",
+      "Self-hosted macOS runner cluster provisioning, scaling, patching, or incident response.",
+      "Sylphx Platform CI/admission policy outside this repository's public workflow surfaces."
+    ],
+    "publicSurfaces": [
+      {
+        "type": "workflow",
+        "name": "iOS signing and build reusable workflow",
+        "location": ".github/workflows/ios-sign-and-build.yml"
+      },
+      {
+        "type": "workflow",
+        "name": "iOS App Store workflow template",
+        "location": "workflow-templates/ios-app-store.yml"
+      },
+      {
+        "type": "manifest",
+        "name": "iOS App Store workflow template metadata",
+        "location": "workflow-templates/ios-app-store.properties.json"
+      },
+      {
+        "type": "documentation",
+        "name": "Cubeage GitHub Actions Infrastructure README",
+        "location": "README.md"
+      }
+    ],
+    "allowedDependencies": [
+      {
+        "repo": "actions/checkout",
+        "surface": "GitHub Action for repository checkout",
+        "direction": "external"
+      },
+      {
+        "repo": "actions/upload-artifact",
+        "surface": "GitHub Action for IPA artifact upload",
+        "direction": "external"
+      },
+      {
+        "repo": "SylphxAI/doctrine",
+        "surface": "Central project manifest schema and standards",
+        "direction": "peer-public"
+      }
+    ],
+    "forbiddenCouplings": [
+      "Do not add app-specific schemes, bundle identifiers, signing identities, or store-release policy to this shared workflow repository.",
+      "Do not store certificates, provisioning profiles, Apple credentials, or consumer repository secrets in this repository.",
+      "Do not make this repository depend on consumer application internals.",
+      "Do not treat runner cluster operations as repo-local workflow-template state."
+    ]
+  },
+  "documentation": {
+    "adr": {
+      "path": "docs/adr",
+      "status": "planned"
+    },
+    "specs": {
+      "path": "README.md",
+      "status": "present"
+    },
+    "catalog": {
+      "path": ".doctrine/project.json",
+      "status": "present"
+    },
+    "runbooks": {
+      "path": "README.md",
+      "status": "present"
+    },
+    "generatedReferences": {
+      "path": "not-applicable",
+      "status": "not-applicable"
+    }
+  },
+  "delivery": {
+    "ciModel": "none",
+    "requiredContexts": [],
+    "deployPath": "No application deployment. Reusable workflow changes become available to consumer repositories after merging to main.",
+    "productionProof": "Workflow changes should be proven by workflow syntax validation and by a consumer repository invoking Cubeage/.github/.github/workflows/ios-sign-and-build.yml@main.",
+    "recoveryClass": "source-revertable"
+  },
+  "adoption": {
+    "status": "baseline",
+    "gaps": [
+      {
+        "id": "workflow-sanity-gate",
+        "description": "Add a required workflow syntax/security validation gate before declaring full doctrine adoption.",
+        "owner": "Cubeage/.github",
+        "target": "Before material reusable workflow changes become routine."
+      },
+      {
+        "id": "runner-ownership-contract",
+        "description": "Link the self-hosted macOS runner ownership and capacity contract from its owning infrastructure repository or catalog.",
+        "owner": "Cubeage/.github",
+        "target": "Before declaring full doctrine adoption."
+      }
+    ]
+  }
+}
