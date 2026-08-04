@@ -45,7 +45,7 @@ on:
 
 jobs:
   distribute:
-    runs-on: ubuntu-latest
+    runs-on: sylphx-linux-standard
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v4
