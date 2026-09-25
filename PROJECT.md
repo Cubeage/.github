@@ -40,8 +40,10 @@ deployments, or production support.
 ## Public Surfaces
 
 - Reusable workflow: `.github/workflows/ios-sign-and-build.yml`.
-- Workflow template: `workflow-templates/ios-app-store.yml`.
-- Template metadata: `workflow-templates/ios-app-store.properties.json`.
+- Reusable workflow: `.github/workflows/firebase-app-distribution.yml`.
+- Template metadata: `workflow-templates/ios-app-store.properties.json` (the
+  matching `ios-app-store.yml` template is missing from the repository).
+- This repository's own content checks: `.github/workflows/content-checks.yml`.
 - Operator documentation: `README.md`.
 
 ## Delivery Proof

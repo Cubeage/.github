@@ -4,12 +4,21 @@ Org-wide GitHub Actions configuration and shared reusable workflows.
 
 ## macOS CI Runner
 
-We run **3 self-hosted macOS runners** on our Kubernetes cluster (Talos/QEMU/Docker-OSX), providing free iOS builds instead of GitHub's expensive macOS-hosted runners (~$10/min).
+iOS builds run on macOS runners provided by Sylphx Runners, not on
+GitHub-hosted macOS runners. The reusable workflow asks for the labels
+`[self-hosted, sylphx, macos, standard]`. Xcode version and capacity are set by
+Sylphx Runners.
 
-- Runner labels: `self-hosted`, `macOS`, `X64`
-- Xcode: 16.2 (16C5032a)
-- Swift: 6.0.3
-- Capacity: **3 concurrent iOS builds**
+## Other shared files
+
+- `.github/workflows/firebase-app-distribution.yml`: reusable workflow that
+  uploads an Android APK/AAB to Firebase App Distribution.
+- `.github/workflows/content-checks.yml`: this repository's own content checks.
+  Every Cubeage repository carries its own copy calling the shared
+  `SylphxAI/.github` actions: `plain-language` (advisory, never blocks) and
+  `zh-hant` (advisory until 2026-10-02, then a required check).
+- Repositories with several workflows also carry a `ci-ok` workflow: the one
+  required check of the merge queue, which waits for every other check.
 
 ---
 
@@ -124,6 +133,5 @@ Each repo manages its own secrets independently. Different repos in different or
 
 ## Runner Maintenance
 
-Runners are managed by the Sylphx Platform team. For issues:
-- Runner offline → check K8s pod: `kubectl get pods -n macos-runner`
-- Xcode update → download from [xcodereleases.com](https://xcodereleases.com), SCP to runner port 30922
+Runners are managed by Sylphx Runners. A runner defect or an Xcode update
+request goes to a `SylphxAI/cloud` issue labelled `platform-request`.
