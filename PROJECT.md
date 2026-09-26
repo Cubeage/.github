@@ -41,6 +41,8 @@ deployments, or production support.
 
 - Reusable workflow: `.github/workflows/ios-sign-and-build.yml`.
 - Reusable workflow: `.github/workflows/firebase-app-distribution.yml`.
+- Shared script: `scripts/pages-publish.sh`, the Cloudflare Pages upload that
+  Cubeage title repositories fetch at a pinned commit.
 - Template metadata: `workflow-templates/ios-app-store.properties.json` (the
   matching `ios-app-store.yml` template is missing from the repository).
 - This repository's own content checks: `.github/workflows/content-checks.yml`.

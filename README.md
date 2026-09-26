@@ -17,6 +17,12 @@ Sylphx Runners.
   Every Cubeage repository carries its own copy calling the shared
   `SylphxAI/.github` actions: `plain-language` (advisory, never blocks) and
   `zh-hant` (advisory until 2026-10-02, then a required check).
+- `scripts/pages-publish.sh`: the one Cloudflare Pages upload every Keel
+  title's `scripts/deploy_pages.sh` calls, fetched at a pinned commit from
+  `https://raw.githubusercontent.com/Cubeage/.github/<sha>/scripts/pages-publish.sh`.
+  It takes only `CLOUDFLARE_API_TOKEN` (Pages Edit): the repository secret in
+  CI, `op://Sylphx/wdzsmplds7qlnrjvjhfdkjqqxu/credential` on the desk. The
+  Global API Key is owner-only and the script clears it before uploading.
 - Repositories with several workflows also carry a `ci-ok` workflow: the one
   required check of the merge queue, which waits for every other check.
 
