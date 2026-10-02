@@ -1,0 +1,53 @@
+name: CI
+
+# One gate for this repository: every check runs under this workflow and the
+# `ci-ok` aggregate is the required status check (ruleset sylphx-merge-queue).
+# content-checks, game-standard-action and ftl-daily-budget-action are called
+# from here (workflow_call only), so their jobs count toward `ci-ok`.
+on:
+  pull_request:
+  merge_group:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  content-checks:
+    uses: ./.github/workflows/content-checks.yml
+
+  game-standard-action:
+    uses: ./.github/workflows/game-standard-action.yml
+
+  ftl-daily-budget-action:
+    uses: ./.github/workflows/ftl-daily-budget-action.yml
+
+  # Parse and lint every workflow with the pinned actionlint 1.7.12 and this
+  # repository's .github/actionlint.yaml (runner labels).
+  workflow-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: SylphxAI/.github/.github/actions/workflow-lint@a0d0ef46284e23283417d3d34063ea38882a0333
+        with:
+          args: |
+            -config-file
+            .github/actionlint.yaml
+
+  # The required check. Skipped jobs pass; failed or cancelled ones fail. This
+  # repository is public, so its runner groups do not serve it (public
+  # repositories are not allowed on them) and every job here uses GitHub's free
+  # hosted runner; sylphx-linux-control would queue forever.
+  ci-ok:
+    if: always()
+    needs: [content-checks, game-standard-action, ftl-daily-budget-action, workflow-lint]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: SylphxAI/.github/.github/actions/needs-pass@a0d0ef46284e23283417d3d34063ea38882a0333
+        with:
+          needs: ${{ toJSON(needs) }}

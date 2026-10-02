@@ -4,8 +4,7 @@ name: game-standard-action
 # free standard hosted runners are allowed here (content-checks.yml runs the
 # same way); a title repository runs the action on sylphx-linux-standard.
 on:
-  pull_request:
-  merge_group:
+  workflow_call:
 
 permissions:
   contents: read
