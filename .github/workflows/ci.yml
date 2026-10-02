@@ -38,12 +38,14 @@ jobs:
             -config-file
             .github/actionlint.yaml
 
-  # The required check. Skipped jobs pass; failed or cancelled ones fail. It
-  # runs on the reserved control pool so a verdict never waits for a seat.
+  # The required check. Skipped jobs pass; failed or cancelled ones fail. This
+  # repository is public, so its runner groups do not serve it (public
+  # repositories are not allowed on them) and every job here uses GitHub's free
+  # hosted runner; sylphx-linux-control would queue forever.
   ci-ok:
     if: always()
     needs: [content-checks, game-standard-action, ftl-daily-budget-action, workflow-lint]
-    runs-on: sylphx-linux-control
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: SylphxAI/.github/.github/actions/needs-pass@a0d0ef46284e23283417d3d34063ea38882a0333
