@@ -1,0 +1,12 @@
+# Runner labels the Cubeage workflows and the reusable workflows they call
+# request; actionlint rejects any label not listed here.
+self-hosted-runner:
+  labels:
+    - standard
+    - sylphx
+    - sylphx-linux-standard
+    - sylphx-linux-control
+    - sylphx-linux-xlarge
+    - sylphx-linux-standard-merge
+    - sylphx-linux-xlarge-merge
+    - sylphx-registry-publisher
