@@ -37,10 +37,16 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
-        with:
-          python-version: "3.12"
-      - run: python3 -m pip install --disable-pip-version-check --quiet pyyaml==6.0.2
+      - name: PyYAML for the guard tests
+        run: |
+          set -euo pipefail
+          if ! python3 -c 'import yaml' >/dev/null 2>&1; then
+            deps="${RUNNER_TEMP:-/tmp}/self-hosted-runners-python"
+            mkdir -p "$deps"
+            python3 -m pip install --quiet --disable-pip-version-check \
+              --target "$deps" pyyaml==6.0.2
+            echo "PYTHONPATH=$deps${PYTHONPATH:+:$PYTHONPATH}" >> "$GITHUB_ENV"
+          fi
       - name: Guard tests
         run: python3 .github/actions/self-hosted-runners/test/test_check_runners.py
       - name: Guard this repository (local action, same code other repos call)
