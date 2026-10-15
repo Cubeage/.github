@@ -49,6 +49,15 @@ Sylphx Runners.
   workflows fetch it the same way and call it in place of `wrangler pages deploy`.
 - Repositories with several workflows also carry a `ci-ok` workflow: the one
   required check of the merge queue, which waits for every other check.
+- `sylphx-linux-control` is the reserved control pool: its Kueue queue never
+  lends and never borrows, so a seconds-long gate never waits for quota behind
+  build jobs. Merge gates run there and nowhere else. An `always()` verdict
+  still runs after its run is cancelled, and that run keeps its concurrency
+  group until it does, so on a busy build pool a superseded run on a shared
+  label held the next one (SylphxAI/agents#4222, 2026-10-02). `ci-ok` is the
+  last job to finish on every run in a repository with several workflows, so it
+  is the gate that belongs on the control pool; the pool exists for exactly
+  this job shape.
 
 ---
 
