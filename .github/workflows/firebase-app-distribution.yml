@@ -1,16 +1,36 @@
 # Reusable Firebase App Distribution Workflow
 #
-# Uploads an Android APK/AAB to Firebase App Distribution for tester access.
+# Uploads an Android APK to Firebase App Distribution for tester access.
 # Requires FIREBASE_CREDENTIALS (service account JSON) and FIREBASE_APP_ID secrets.
 #
-# Usage in your repo's workflow:
+# Same-run caller: build the APK into build-output/ before these producer steps.
+# The job output retains the producing attempt when only distribution is rerun.
+#   permissions:
+#     contents: read
+#     id-token: write
 #   jobs:
+#     build:
+#       runs-on: sylphx-linux-standard
+#       outputs:
+#         distribution-entry: ${{ steps.distribution-entry.outputs.name }}
+#       steps:
+#         # Checkout and build the APK here.
+#         - name: Name this build's handoff
+#           id: distribution-entry
+#           run: echo "name=android-build-attempt-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+#         - name: Store the APK directory
+#           uses: SylphxAI/.github/.github/actions/run-store@4dcc910606d7624150d2004f2dd970eb570de30e
+#           with:
+#             mode: put
+#             name: ${{ steps.distribution-entry.outputs.name }}
+#             path: ./build-output
+#             required: "true"
 #     distribute:
 #       needs: build
 #       uses: Cubeage/.github/.github/workflows/firebase-app-distribution.yml@main
 #       with:
-#         app-id: ${{ secrets.FIREBASE_APP_ID }}
-#         artifact-name: android-build
+#         app-id: ${{ vars.FIREBASE_APP_ID }}
+#         artifact-name: ${{ needs.build.outputs.distribution-entry }}
 #         release-notes: "SDK v3.1.68 update"
 #         groups: "qa-testers"
 #       secrets:
@@ -26,7 +46,7 @@ on:
         required: true
         type: string
       artifact-name:
-        description: "Name of the GitHub Actions artifact containing the APK"
+        description: "Same-run run-store entry containing the APK (seven-day availability)"
         required: true
         type: string
       release-notes:
@@ -45,13 +65,18 @@ on:
 
 jobs:
   distribute:
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ${{ github.event.repository.private && 'sylphx-linux-standard' || 'ubuntu-latest' }}
     steps:
       - name: Download build artifact
-        uses: actions/download-artifact@v4
+        uses: SylphxAI/.github/.github/actions/run-store@4dcc910606d7624150d2004f2dd970eb570de30e # main
         with:
+          mode: get
           name: ${{ inputs.artifact-name }}
           path: ./build-output
+          required: "true"
 
       - name: Find APK
         id: find-apk
