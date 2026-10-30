@@ -12,7 +12,12 @@ Sylphx Runners.
 ## Other shared files
 
 - `.github/workflows/firebase-app-distribution.yml`: reusable workflow that
-  uploads an Android APK/AAB to Firebase App Distribution.
+  uploads an Android APK to Firebase App Distribution. The caller stores its
+  APK directory with the pinned run-store action in the same workflow run,
+  grants `id-token: write`, and passes that entry as `artifact-name`. The
+  workflow header includes a paired producer/caller example. Entries last seven
+  days; a missing or unreadable entry fails before Firebase authentication.
+  This is a transient handoff, with no historical-build durability promise.
 - `workflow-templates/ci-fast-path.yml`: the starter for a repository's CI -
   docs-only pull requests skip heavy jobs, superseded runs cancel, heavy jobs
   wait for the cheap gate, `ci-ok` is the required check. It calls the
