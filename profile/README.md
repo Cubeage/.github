@@ -57,7 +57,7 @@ Org-wide Actions / macOS runner docs: see root [`README.md`](https://github.com/
 |--|--|
 | **Legal** | Cubeage Limited |
 | **Mark** | Cube + **CUBEAGE** |
-| **Support** | support@cubeage.com |
+| **Support** | hi@cubeage.com |
 | **SSOT** | [github.com/Cubeage/brand](https://github.com/Cubeage/brand) |
 
 ---
