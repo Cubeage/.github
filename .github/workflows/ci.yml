@@ -9,7 +9,7 @@ on:
   merge_group:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.event_name == 'pull_request' && format('{0}-pr-{1}', github.workflow, github.event.pull_request.number) || format('{0}-run-{1}', github.workflow, github.run_id) }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
@@ -37,6 +37,17 @@ jobs:
           args: |
             -config-file
             .github/actionlint.yaml
+      - name: Concurrency contract tests
+        run: |
+          set -euo pipefail
+          if ! python3 -c 'import yaml' >/dev/null 2>&1; then
+            deps="${RUNNER_TEMP:-/tmp}/workflow-concurrency-python"
+            mkdir -p "$deps"
+            python3 -m pip install --quiet --disable-pip-version-check \
+              --target "$deps" pyyaml==6.0.2
+            export PYTHONPATH="$deps${PYTHONPATH:+:$PYTHONPATH}"
+          fi
+          python3 -m unittest discover -s tests -p "test_*.py"
 
   # The required check. Skipped jobs pass; failed or cancelled ones fail. This
   # repository is public, so its runner groups do not serve it (public
