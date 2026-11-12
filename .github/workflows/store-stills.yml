@@ -77,6 +77,9 @@ permissions:
 jobs:
   stills:
     name: store-stills-${{ inputs.title }}
+    concurrency:
+      group: store-stills-${{ inputs.title }}-${{ github.event_name == 'pull_request' && format('{0}-pr-{1}', github.workflow, github.event.pull_request.number) || format('{0}-run-{1}', github.workflow, github.run_id) }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     # The own-runner label is named here as the fallback, so the self-hosted-runners guard can
     # see it (an input alone is set outside this file); a caller may still pass another own runner.
     runs-on: ${{ inputs.runs-on || 'sylphx-linux-standard' }}
