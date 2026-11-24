@@ -240,4 +240,4 @@ jobs:
           name: store-stills-${{ inputs.title }}
           path: store-stills
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 7
