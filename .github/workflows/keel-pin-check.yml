@@ -1,0 +1,34 @@
+name: Keel pin check
+
+on:
+  workflow_call:
+    secrets:
+      CUBEAGE_CI_READER_APP_ID:
+        required: true
+      CUBEAGE_CI_READER_APP_KEY:
+        required: true
+
+concurrency:
+  # A distinct prefix prevents the callee from cancelling its caller.
+  group: shared-keel-pin-${{ github.event_name == 'pull_request' && format('{0}-pr-{1}', github.workflow, github.event.pull_request.number) || format('{0}-run-{1}', github.workflow, github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  keel-pin-check:
+    runs-on: ${{ github.event_name == 'merge_group' && 'sylphx-linux-standard-merge' || 'sylphx-linux-standard' }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The first parent of the checked-out PR or merge-group commit is its base.
+          fetch-depth: 2
+      - uses: SylphxAI/.github/.github/actions/keel-pin-check@3778944553b3f1d2a017832d343c2f844a226725 # main
+        with:
+          reader-app-id: ${{ secrets.CUBEAGE_CI_READER_APP_ID }}
+          reader-app-key: ${{ secrets.CUBEAGE_CI_READER_APP_KEY }}
+          # Compare PRs and merge groups against their base; otherwise audit every pin.
+          base: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 'auto' || '' }}

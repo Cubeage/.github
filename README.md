@@ -9,6 +9,29 @@ GitHub-hosted macOS runners. The reusable workflow asks for the labels
 `[self-hosted, sylphx, macos, standard]`. Xcode version and capacity are set by
 Sylphx Runners.
 
+## Keel pin check
+
+Call this workflow from a private repository that can use the Sylphx runner
+pools. It checks out the caller's commit and runs the shared Keel pin policy.
+Pull requests and merge groups are compared with their base; a manual run
+checks every pin. The result is the job's pass or fail; there are no outputs.
+
+```yaml
+jobs:
+  keel-pin-check:
+    permissions:
+      contents: read
+    uses: Cubeage/.github/.github/workflows/keel-pin-check.yml@<merged-commit-sha>
+    secrets:
+      CUBEAGE_CI_READER_APP_ID: ${{ secrets.CUBEAGE_CI_READER_APP_ID }}
+      CUBEAGE_CI_READER_APP_KEY: ${{ secrets.CUBEAGE_CI_READER_APP_KEY }}
+```
+
+Keep the caller's existing event triggers and pass both read-only GitHub App
+secrets explicitly. If the check already gates merges through `ci-ok`,
+keep the calling job in that gate's `needs`. Keep a thin local caller if the
+standalone trigger or manual workflow must remain available.
+
 ## Other shared files
 
 - `.github/workflows/firebase-app-distribution.yml`: reusable workflow that
