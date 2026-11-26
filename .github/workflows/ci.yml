@@ -37,7 +37,7 @@ jobs:
           args: |
             -config-file
             .github/actionlint.yaml
-      - name: Concurrency contract tests
+      - name: Workflow contract tests
         run: |
           set -euo pipefail
           if ! python3 -c 'import yaml' >/dev/null 2>&1; then

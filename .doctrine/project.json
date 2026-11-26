@@ -47,6 +47,11 @@
       },
       {
         "type": "workflow",
+        "name": "Keel pin check reusable workflow",
+        "location": ".github/workflows/keel-pin-check.yml"
+      },
+      {
+        "type": "workflow",
         "name": "iOS App Store workflow template",
         "location": "workflow-templates/ios-app-store.yml"
       },
