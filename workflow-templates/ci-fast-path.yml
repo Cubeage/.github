@@ -40,11 +40,13 @@ jobs:
 
   # Heavy jobs (release build, e2e, iOS/Android) wait for the gate, skip on a
   # docs-only change, and run on a ready pull request, the trunk and nightly -
-  # not on a draft.
+  # not on a draft. Cubeage is served no xlarge merge twin (only
+  # sylphx-linux-standard-merge), so every event uses the plain xlarge pool;
+  # needs-pass refuses a merge group that selects an unserved twin.
   heavy:
     needs: [changes, gate]
     if: needs.changes.outputs.code == 'true' && !github.event.pull_request.draft
-    runs-on: ${{ github.event_name == 'merge_group' && 'sylphx-linux-xlarge-merge' || 'sylphx-linux-xlarge' }}
+    runs-on: sylphx-linux-xlarge
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
