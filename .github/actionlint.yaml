@@ -8,5 +8,4 @@ self-hosted-runner:
     - sylphx-linux-control
     - sylphx-linux-xlarge
     - sylphx-linux-standard-merge
-    - sylphx-linux-xlarge-merge
     - sylphx-registry-publisher

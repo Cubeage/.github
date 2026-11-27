@@ -65,6 +65,7 @@ on:
         type: number
         default: 240
       runs-on:
+        description: Only sylphx-linux-standard (the default; empty means the same). Any other value fails the job before a runner is assigned.
         type: string
         default: sylphx-linux-standard
       timeout-minutes:
@@ -80,9 +81,10 @@ jobs:
     concurrency:
       group: store-stills-${{ inputs.title }}-${{ github.event_name == 'pull_request' && format('{0}-pr-{1}', github.workflow, github.event.pull_request.number) || format('{0}-run-{1}', github.workflow, github.run_id) }}
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-    # The own-runner label is named here as the fallback, so the self-hosted-runners guard can
-    # see it (an input alone is set outside this file); a caller may still pass another own runner.
-    runs-on: ${{ inputs.runs-on || 'sylphx-linux-standard' }}
+    # Only the standard own runner is accepted, as a literal the self-hosted-runners guard can
+    # see. Any other runs-on input reaches fromJSON on text that is never JSON (it starts with
+    # `unsupported`), which fails while runs-on is evaluated, so no runner is ever assigned.
+    runs-on: ${{ (inputs.runs-on == '' || inputs.runs-on == 'sylphx-linux-standard') && 'sylphx-linux-standard' || fromJSON(format('unsupported runs-on {0}', inputs.runs-on)) }}
     timeout-minutes: ${{ inputs.timeout-minutes }}
     steps:
       # TEMPORARY until the package registry (SylphxAI/cloud#9411) replaces git deps:
